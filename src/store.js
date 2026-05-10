@@ -276,7 +276,16 @@ function generateOpponent() {
   };
 }
 
-// ===== FIGHT SIMULATION =====
+// ===== COMBAT ENGINE (Pokémon-style Turn-Based) =====
+const STAT_STAGE_MULTIPLIERS = {
+  '-6': 0.25, '-5': 0.29, '-4': 0.33, '-3': 0.40, '-2': 0.50, '-1': 0.67,
+  '0': 1.0, '1': 1.5, '2': 2.0, '3': 2.5, '4': 3.0, '5': 3.5, '6': 4.0
+};
+
+function getStatMultiplier(stage) {
+  return STAT_STAGE_MULTIPLIERS[String(Math.max(-6, Math.min(6, stage || 0)))] || 1;
+}
+
 function calculateTypeMultiplier(attackerType, defenderType) {
   if (!attackerType || !defenderType) return 1;
   const typeData = TYPES[attackerType];
@@ -287,99 +296,263 @@ function calculateTypeMultiplier(attackerType, defenderType) {
   return 1;
 }
 
-function simulateFight(rooster, opponent, useBagItem = null) {
-  const rounds = 5 + Math.floor(Math.random() * 4); // 5-8 rounds
-  const events = [];
-  let myHP = 100, opHP = 100;
-  let myStats = { ...rooster.baseStats };
-  let opStats = { ...opponent.baseStats };
-  let myBuffs = {}, opBuffs = {};
-  const mySkills = ['cuaDam', 'mo', 'daBay', 'khangCu', 'phongThu'];
+// BALANCED DAMAGE FORMULA (Pokémon-inspired)
+function calculateDamage(attacker, defender, skill, attackerStage, defenderStage, isSTAB = false) {
+  const power = skill.power || 0;
+  if (power <= 0) return 0;
   
-  // Initialize PP
-  let myPPUsed = {};
-  let opPPUsed = {};
+  const atkMult = getStatMultiplier(attackerStage?.atk || 0);
+  const defMult = getStatMultiplier(defenderStage?.def || 0);
   
-  // Initialize PP max for each skill
-  let myPPMax = {
-    cuaDam: 20, mo: 25, daBay: 15, khangCu: 10, phongThu: 15
+  const baseAtk = attacker.baseStats.atk * atkMult;
+  const baseDef = defender.baseStats.def * defMult;
+  
+  // Core formula: scaled down significantly from original
+  const levelFactor = 0.4 + (Math.random() * 0.2); // 0.4 - 0.6 random variance
+  const statRatio = baseAtk / (baseDef + 20); // +20 prevents division by tiny numbers
+  const stabBonus = isSTAB ? 1.3 : 1.0;
+  const powerFactor = power / 50; // normalize: 35 power → 0.7, 45 power → 0.9
+  
+  // Final damage: base ~15-35 range, max ~60 for super-effective high power
+  let damage = Math.round(20 * statRatio * powerFactor * levelFactor * stabBonus);
+  
+  // Apply random variance ±15%
+  const variance = 0.85 + Math.random() * 0.15;
+  damage = Math.round(damage * variance);
+  
+  // Minimum 3, cap at 55 per hit (prevents 1-shot with HP=100)
+  return Math.max(3, Math.min(55, damage));
+}
+
+// ===== TURN-BASED COMBAT STATE =====
+const COMBAT_STATE = {
+  IDLE: 'idle',
+  PLAYER_TURN: 'player_turn',
+  OPPONENT_TURN: 'opponent_turn',
+  RESOLVING: 'resolving',
+  ENDED: 'ended',
+};
+
+function initCombatState(rooster, opponent) {
+  return {
+    myHP: 100,
+    opHP: 100,
+    myMaxHP: 100,
+    opMaxHP: 100,
+    myStatStages: { atk: 0, def: 0, spd: 0 },
+    opStatStages: { atk: 0, def: 0, spd: 0 },
+    myPP: { cuaDam: 20, mo: 25, daBay: 15, khangCu: 10, phongThu: 15 },
+    opPP: { cuaDam: 20, mo: 25, daBay: 15 },
+    combatEvents: [],
+    combatTurn: 0,
+    combatState: COMBAT_STATE.PLAYER_TURN,
+    winner: null,
+    fleeAttempt: false,
   };
+}
+
+function applyStatusSkill(rooster, skill, statStages) {
+  const newStages = { ...statStages };
+  if (skill.id === 'khangCu') {
+    newStages.def = Math.min(6, (newStages.def || 0) + 1);
+    return { stages: newStages, message: `${rooster.name} tăng phòng thủ!`, type: 'buff' };
+  }
+  if (skill.id === 'phongThu') {
+    newStages.def = Math.min(6, (newStages.def || 0) + 2);
+    return { stages: newStages, message: `${rooster.name} tăng phòng thủ mạnh!`, type: 'buff' };
+  }
+  return { stages: newStages, message: `${rooster.name} dùng ${skill.name}!`, type: 'status' };
+}
+
+function opponentChooseSkill(opponent, opPP) {
+  const available = ['cuaDam', 'mo', 'daBay'].filter(id => (opPP[id] || 0) < SKILLS[id].pp);
+  if (available.length === 0) return 'cuaDam'; // struggle
+  // 70% attack, 30% buff (if not already buffed)
+  if (Math.random() < 0.3) {
+    const buffs = ['khangCu', 'phongThu'].filter(id => (opPP[id] || 0) < SKILLS[id].pp);
+    if (buffs.length > 0) return buffs[Math.floor(Math.random() * buffs.length)];
+  }
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function executeSingleTurn(rooster, opponent, playerAction, combatData) {
+  const { myHP, opHP, myStatStages, opStatStages, myPP, opPP, combatTurn } = combatData;
+  let events = [];
+  let newMyHP = myHP, newOpHP = opHP;
+  let newMyStages = { ...myStatStages }, newOpStages = { ...opStatStages };
+  let newMyPP = { ...myPP }, newOpPP = { ...opPP };
   
-  // Calculate initial stats with type multiplier
-  const myTypeMult = calculateTypeMultiplier(rooster.type, opponent.type);
-  const opTypeMult = calculateTypeMultiplier(opponent.type, rooster.type);
+  // Determine who goes first by speed
+  const mySpd = rooster.baseStats.spd * getStatMultiplier(myStatStages.spd);
+  const opSpd = opponent.baseStats.spd * getStatMultiplier(opStatStages.spd);
+  const myGoesFirst = mySpd >= opSpd;
   
-  for (let i = 0; i < rounds; i++) {
-    // My turn - choose skill
-    const skillId = mySkills[Math.floor(Math.random() * mySkills.length)];
-    const skill = SKILLS[skillId];
+  const turnOrder = myGoesFirst ? [
+    { side: 'me', action: playerAction },
+    { side: 'opponent', action: { type: 'skill', skillId: opponentChooseSkill(opponent, opPP) } }
+  ] : [
+    { side: 'opponent', action: { type: 'skill', skillId: opponentChooseSkill(opponent, opPP) } },
+    { side: 'me', action: playerAction }
+  ];
+  
+  let combatEnded = false;
+  
+  for (const turn of turnOrder) {
+    if (combatEnded) break;
     
-    // Check PP
-    if (skill.type === 'status') {
-      // Apply buff if status skill
-      if (skill.id === 'khangCu') myBuffs.atk = (myBuffs.atk || 1) * 1.15;
-      if (skill.id === 'phongThu') myBuffs.def = (myBuffs.def || 1) * 1.15;
+    const isMe = turn.side === 'me';
+    const actor = isMe ? rooster : opponent;
+    const target = isMe ? opponent : rooster;
+    const actorStages = isMe ? newMyStages : newOpStages;
+    const targetStages = isMe ? newOpStages : newMyStages;
+    const actorPP = isMe ? newMyPP : newOpPP;
+    
+    if (turn.action.type === 'skill') {
+      const skill = SKILLS[turn.action.skillId];
       
-      myHP = Math.min(100, myHP + 10); // Small heal on status
-      events.push({ round: i * 2 + 1, attacker: 'me', type: 'status', skill: skill.name, damage: 0, myHP, opHP });
-      myPPUsed[skillId] = (myPPUsed[skillId] || 0) + 1;
-    } else {
-      // My attack (non-status skill)
-      const myBaseDmg = Math.max(5, Math.round(
-        ((myStats.atk * (myBuffs.atk || 1)) * (0.8 + Math.random() * 0.4) - opStats.def * 0.2) * rooster.luck * myTypeMult
-      ));
+      // Check PP
+      const ppUsed = actorPP[turn.action.skillId] || 0;
+      if (ppUsed >= skill.pp) {
+        events.push({
+          round: combatTurn,
+          attacker: isMe ? 'me' : 'opponent',
+          type: 'miss',
+          skill: skill.name,
+          message: `${actor.name} mệt quá, không thể dùng ${skill.name}!`,
+          myHP: newMyHP, opHP: newOpHP,
+        });
+        continue;
+      }
+      actorPP[turn.action.skillId] = ppUsed + 1;
       
-      // Use skill power
-      let myDmg = Math.round(myBaseDmg * (skill.power / 30) * (Math.random() < skill.accuracy ? 1 : 0));
-      myDmg = Math.max(5, myDmg);
-      
-      opHP = Math.max(0, opHP - myDmg);
-      events.push({ 
-        round: i * 2 + 1, 
-        attacker: 'me', 
-        damage: myDmg, 
-        myHP: myHP, 
-        opHP: opHP,
-        skill: skill.name,
-        type: 'attack',
-        multiplier: myTypeMult,
+      if (skill.type === 'status') {
+        const result = applyStatusSkill(actor, skill, actorStages);
+        if (isMe) newMyStages = result.stages;
+        else newOpStages = result.stages;
+        events.push({
+          round: combatTurn,
+          attacker: isMe ? 'me' : 'opponent',
+          type: 'status',
+          skill: skill.name,
+          message: result.message,
+          myHP: newMyHP, opHP: newOpHP,
+          statChange: result.type,
+        });
+      } else {
+        // Damage skill
+        const isSTAB = actor.type === skill.type || skill.type === 'physical'; // simplified
+        const typeMult = calculateTypeMultiplier(actor.type, target.type);
+        const dmg = calculateDamage(actor, target, skill, actorStages, targetStages, actor.type === skill.type);
+        
+        // Check accuracy
+        const hit = Math.random() < (skill.accuracy || 0.95);
+        if (!hit) {
+          events.push({
+            round: combatTurn,
+            attacker: isMe ? 'me' : 'opponent',
+            type: 'miss',
+            skill: skill.name,
+            message: `${actor.name} dùng ${skill.name} nhưng trượt!`,
+            myHP: newMyHP, opHP: newOpHP,
+          });
+          continue;
+        }
+        
+        if (isMe) newOpHP = Math.max(0, newOpHP - dmg);
+        else newMyHP = Math.max(0, newMyHP - dmg);
+        
+        events.push({
+          round: combatTurn,
+          attacker: isMe ? 'me' : 'opponent',
+          type: 'attack',
+          skill: skill.name,
+          damage: dmg,
+          myHP: newMyHP,
+          opHP: newOpHP,
+          multiplier: typeMult,
+          message: `${actor.name} dùng ${skill.name}${typeMult > 1 ? ' — Siêu hiệu quả!' : typeMult < 1 ? ' — Không hiệu quả...' : ''}${dmg > 0 ? ` (-${dmg} HP)` : ''}`,
+        });
+        
+        if (newMyHP <= 0 || newOpHP <= 0) {
+          combatEnded = true;
+          break;
+        }
+      }
+    } else if (turn.action.type === 'item') {
+      const item = ITEMS[turn.action.itemId];
+      let message = `${actor.name} dùng ${item.name}!`;
+      if (item.effect === 'heal') {
+        if (isMe) newMyHP = Math.min(100, newMyHP + item.value);
+        else newOpHP = Math.min(100, newOpHP + item.value);
+        message += ` Hồi ${item.value} HP`;
+      } else if (item.effect === 'atkUp') {
+        const stages = isMe ? newMyStages : newOpStages;
+        stages.atk = Math.min(6, (stages.atk || 0) + Math.ceil(item.value / 10));
+        message += ` Tấn công tăng!`;
+      } else if (item.effect === 'defUp') {
+        const stages = isMe ? newMyStages : newOpStages;
+        stages.def = Math.min(6, (stages.def || 0) + Math.ceil(item.value / 10));
+        message += ` Phòng thủ tăng!`;
+      }
+      events.push({
+        round: combatTurn,
+        attacker: isMe ? 'me' : 'opponent',
+        type: 'item',
+        item: item.name,
+        message,
+        myHP: newMyHP, opHP: newOpHP,
       });
-      myPPUsed[skillId] = (myPPUsed[skillId] || 0) + 1;
+    } else if (turn.action.type === 'flee') {
+      const fleeChance = mySpd / (mySpd + opSpd);
+      const fled = Math.random() < fleeChance;
+      events.push({
+        round: combatTurn,
+        attacker: 'me',
+        type: 'flee',
+        success: fled,
+        message: fled ? `${actor.name} đã chạy thoát!` : `${actor.name} thử chạy nhưng thất bại!`,
+        myHP: newMyHP, opHP: newOpHP,
+      });
+      if (fled) combatEnded = true;
     }
-    
-    if (opHP <= 0) break;
-    
-    // Opponent turn
-    const opSkills = ['cuaDam', 'mo', 'daBay'];
-    const opSkillId = opSkills[Math.floor(Math.random() * opSkills.length)];
-    const opSkill = SKILLS[opSkillId];
-    
-    const opBaseDmg = Math.max(5, Math.round(
-      ((opStats.atk * (opBuffs.atk || 1)) * (0.8 + Math.random() * 0.4) - myStats.def * 0.2) * opponent.luck * opTypeMult
-    ));
-    
-    let opDmg = Math.round(opBaseDmg * (opSkill.power / 30) * (Math.random() < opSkill.accuracy ? 1 : 0));
-    opDmg = Math.max(5, opDmg);
-    
-    myHP = Math.max(0, myHP - opDmg);
-    events.push({ 
-      round: i * 2 + 2, 
-      attacker: 'opponent', 
-      damage: opDmg, 
-      myHP, 
-      opHP,
-      skill: opSkill.name,
-      type: 'attack',
-      multiplier: opTypeMult,
-    });
-    
-    if (myHP <= 0) break;
   }
   
-  const won = opHP <= 0 || (myHP > opHP && myHP > 0);
+  const winner = newOpHP <= 0 ? 'me' : newMyHP <= 0 ? 'opponent' : null;
+  
+  return {
+    myHP: newMyHP,
+    opHP: newOpHP,
+    myStatStages: newMyStages,
+    opStatStages: newOpStages,
+    myPP: newMyPP,
+    opPP: newOpPP,
+    events,
+    combatEnded,
+    winner,
+    combatTurn: combatTurn + 1,
+  };
+}
+
+// Legacy simulateFight — now uses balanced engine for backward compat
+function simulateFight(rooster, opponent) {
+  let combatData = initCombatState(rooster, opponent);
+  const events = [];
+  let turnCount = 0;
+  const maxTurns = 20;
+  
+  while (combatData.myHP > 0 && combatData.opHP > 0 && turnCount < maxTurns) {
+    const skillId = ['cuaDam','mo','daBay','khangCu','phongThu'][Math.floor(Math.random()*5)];
+    const result = executeSingleTurn(rooster, opponent, { type: 'skill', skillId }, combatData);
+    events.push(...result.events);
+    combatData = { ...combatData, ...result };
+    if (result.combatEnded) break;
+    turnCount++;
+  }
+  
+  const won = combatData.opHP <= 0 || (combatData.myHP > combatData.opHP && combatData.myHP > 0);
   const xpGain = won ? 25 * (opponent.baseStats.atk + opponent.baseStats.def + opponent.baseStats.spd) / 200 : 10;
   
-  return { won, myHP: Math.max(0, myHP), opHP: Math.max(0, opHP), events, xpGain };
+  return { won, myHP: Math.max(0, combatData.myHP), opHP: Math.max(0, combatData.opHP), events, xpGain };
 }
 
 // ===== CATCH SYSTEM =====
@@ -442,6 +615,15 @@ const useGameStore = create((set, get) => ({
   fightResult: null,
   fightEvents: [],
   currentEventIndex: -1,
+  
+  // Turn-based Combat State
+  combatData: null,
+  combatPhase: 'idle', // idle | player_turn | animating | ended
+  combatLog: [],
+  combatLogIndex: -1,
+  showingCombatActionMenu: true,
+  selectedCombatSkill: null,
+  
   stats: JSON.parse(localStorage.getItem('daGa_stats') || '{"wins":0,"losses":0,"totalWinnings":0}') || { wins: 0, losses: 0, totalWinnings: 0 },
   
   // Inventory & Bag
@@ -518,21 +700,128 @@ const useGameStore = create((set, get) => ({
       currentEventIndex: -1,
       wallet: newWallet,
       stats,
+      // Turn-based combat init
+      combatData: initCombatState(selectedRooster, opponent),
+      combatPhase: 'player_turn',
+      combatLog: [],
+      combatLogIndex: -1,
+      showingCombatActionMenu: true,
     });
   },
   
+  // ===== TURN-BASED COMBAT ACTIONS =====
+  executePlayerSkill: (skillId) => {
+    const { selectedRooster, opponent, combatData } = get();
+    if (!combatData || combatData.combatState === 'ended') return;
+    
+    const result = executeSingleTurn(selectedRooster, opponent, { type: 'skill', skillId }, combatData);
+    const newCombatData = { ...combatData, ...result, combatState: result.combatEnded ? 'ended' : 'player_turn' };
+    
+    set({
+      combatData: newCombatData,
+      combatLog: [...get().combatLog, ...result.events],
+      combatLogIndex: get().combatLog.length + result.events.length - 1,
+      combatPhase: result.combatEnded ? 'ended' : 'player_turn',
+      showingCombatActionMenu: !result.combatEnded,
+    });
+    
+    if (result.combatEnded) {
+      const won = result.winner === 'me';
+      const xpGain = won ? 25 * (opponent.baseStats.atk + opponent.baseStats.def + opponent.baseStats.spd) / 200 : 10;
+      set({ 
+        fightResult: { won, myHP: result.myHP, opHP: result.opHP, xpGain },
+        fightEvents: [...get().combatLog, ...result.events],
+      });
+    }
+  },
+  
+  executePlayerItem: (itemId) => {
+    const { selectedRooster, opponent, combatData } = get();
+    if (!combatData || combatData.combatState === 'ended') return;
+    
+    // Remove item
+    const inventory = { ...get().inventory };
+    if (!inventory[itemId] || inventory[itemId] <= 0) return;
+    inventory[itemId] -= 1;
+    if (inventory[itemId] <= 0) delete inventory[itemId];
+    set({ inventory });
+    localStorage.setItem('daGa_inventory', JSON.stringify(inventory));
+    
+    const result = executeSingleTurn(selectedRooster, opponent, { type: 'item', itemId }, combatData);
+    const newCombatData = { ...combatData, ...result, combatState: result.combatEnded ? 'ended' : 'player_turn' };
+    
+    set({
+      combatData: newCombatData,
+      combatLog: [...get().combatLog, ...result.events],
+      combatLogIndex: get().combatLog.length + result.events.length - 1,
+      combatPhase: result.combatEnded ? 'ended' : 'player_turn',
+      showingCombatActionMenu: !result.combatEnded,
+    });
+  },
+  
+  executePlayerFlee: () => {
+    const { selectedRooster, opponent, combatData, betAmount, wallet } = get();
+    if (!combatData || combatData.combatState === 'ended') return;
+    
+    const result = executeSingleTurn(selectedRooster, opponent, { type: 'flee' }, combatData);
+    const fled = result.events.find(e => e.type === 'flee')?.success || false;
+    
+    const newCombatData = { ...combatData, ...result, combatState: 'ended', fleeAttempt: true };
+    
+    set({
+      combatData: newCombatData,
+      combatLog: [...get().combatLog, ...result.events],
+      combatLogIndex: get().combatLog.length + result.events.length - 1,
+      combatPhase: 'ended',
+      showingCombatActionMenu: false,
+      fightResult: { won: false, fled, myHP: result.myHP, opHP: result.opHP, xpGain: 0 },
+      fightEvents: [...get().combatLog, ...result.events],
+      wallet: fled ? wallet : wallet - betAmount,
+    });
+    
+    if (!fled) {
+      // Flee failed, lost bet
+      const stats = { ...get().stats, losses: get().stats.losses + 1 };
+      set({ stats });
+      localStorage.setItem('daGa_stats', JSON.stringify(stats));
+      localStorage.setItem('daGa_wallet', String(wallet - betAmount));
+    }
+  },
+  
   advanceFight: () => {
-    const { currentEventIndex, fightEvents } = get();
-    const nextIndex = currentEventIndex + 1;
-    if (nextIndex >= fightEvents.length) {
-      set({ phase: PHASE.RESULT });
-    } else {
-      set({ currentEventIndex: nextIndex });
+    const { currentEventIndex, fightEvents, combatPhase, combatLog, combatLogIndex } = get();
+    
+    // Legacy: if using old fightEvents, advance through them
+    if (fightEvents.length > 0 && (!combatLog || combatLog.length === 0)) {
+      const nextIndex = currentEventIndex + 1;
+      if (nextIndex >= fightEvents.length) {
+        set({ phase: PHASE.RESULT });
+      } else {
+        set({ currentEventIndex: nextIndex });
+      }
+      return;
+    }
+    
+    // Turn-based: advance combat log
+    if (combatLog.length > 0) {
+      const nextIdx = (combatLogIndex || -1) + 1;
+      if (nextIdx >= combatLog.length) {
+        if (combatPhase === 'ended') {
+          set({ phase: PHASE.RESULT });
+        }
+      } else {
+        set({ combatLogIndex: nextIdx });
+      }
     }
   },
   
   skipFight: () => {
-    set({ phase: PHASE.RESULT });
+    const { combatPhase } = get();
+    if (combatPhase === 'ended') {
+      set({ phase: PHASE.RESULT });
+    } else {
+      set({ combatLogIndex: get().combatLog.length - 1, combatPhase: 'ended', phase: PHASE.RESULT });
+    }
   },
   
   playAgain: () => set({
@@ -543,6 +832,11 @@ const useGameStore = create((set, get) => ({
     fightResult: null,
     fightEvents: [],
     currentEventIndex: -1,
+    combatData: null,
+    combatPhase: 'idle',
+    combatLog: [],
+    combatLogIndex: -1,
+    showingCombatActionMenu: true,
   }),
   
   backToMenu: () => set({
