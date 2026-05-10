@@ -1,9 +1,11 @@
-import { motion } from 'framer-motion'
-import useGameStore from './store'
-import './Menu.css'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import useGameStore from './store';
+import './Menu.css';
 
 function Menu() {
-  const { wallet, stats, startGame, resetWallet } = useGameStore()
+  const { wallet, stats, startGame, resetWallet } = useGameStore();
+  const [showTerminal, setShowTerminal] = useState(false);
 
   return (
     <div className="menu-screen">
@@ -52,29 +54,92 @@ function Menu() {
             {stats.wins + stats.losses > 0
               ? Math.round((stats.wins / (stats.wins + stats.losses)) * 100)
               : 0}%
-          </span>
+            </span>
         </div>
       </motion.div>
 
-      <motion.button
-        className="menu-btn btn-fight"
-        whileTap={{ scale: 0.92 }}
-        whileHover={{ scale: 1.05 }}
-        onClick={startGame}
+      <motion.div
+        className="menu-buttons"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        ⚔️ VÀO ĐÁ ⚔️
-      </motion.button>
+        <motion.button
+          className="menu-btn btn-fight"
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={startGame}
+        >
+          ⚔️ VÀO ĐÁ ⚔️
+        </motion.button>
 
+        <motion.button
+          className="menu-btn btn-map"
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.05 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          onClick={() => useGameStore.getState().setPhase('map')}
+        >
+          🗺️ Bản Đồ
+        </motion.button>
+
+        <motion.button
+          className="menu-btn btn-inventory"
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.05 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          onClick={() => useGameStore.getState().setPhase('inventory')}
+        >
+          🎒 Túi Đồ
+        </motion.button>
+
+        <motion.button
+          className="menu-btn btn-level"
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.05 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          onClick={() => useGameStore.getState().setPhase('level')}
+        >
+          📊 Cấp độ
+        </motion.button>
+      </motion.div>
+
+      <motion.div
+        className="menu-tools"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.0 }}
+      >
+        <button 
+          className="menu-btn btn-coin" 
+          onClick={() => setShowTerminal(true)}
+          whileTap={{ scale: 0.95 }}
+        >
+          💻 Terminal
+        </button>
+        
+        <button 
+          className="menu-btn btn-reset"
+          onClick={resetWallet}
+          whileTap={{ scale: 0.95 }}
+        >
+          💸 Phá sản? Nhận lại 5,000 Xu
+        </button>
+      </motion.div>
+      
       {wallet <= 0 && (
         <button className="menu-btn btn-reset" onClick={resetWallet}>
           💸 Phá sản? Nhận lại 5,000 Xu
         </button>
       )}
     </div>
-  )
+  );
 }
 
-export default Menu
+export default Menu;

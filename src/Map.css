@@ -1,0 +1,155 @@
+/* ===== MAP COMPONENT ===== */
+.map-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  gap: 12px;
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.map-title {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.route-map {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.route-card {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.route-card:active {
+  transform: scale(0.96);
+}
+
+.route-card.visited {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.route-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.route-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.route-level {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.3);
+}
+
+.route-wilds {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wild-chicken {
+  font-size: 24px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+}
+
+.wild-chicken-emoji {
+  font-size: 28px;
+}
+
+.wild-chicken-name {
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.map-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.map-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.map-btn:active {
+  transform: scale(0.94);
+}
+
+.btn-explore {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+}
+
+.btn-shop {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+}
+
+.btn-bag {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+}
+
+.btn-save {
+  background: rgba(0,0,0,0.3);
+  color: var(--text-dim);
+  border: 1px solid var(--card-border);
+}
+
+.btn-help {
+  background: rgba(0,0,0,0.3);
+  color: var(--text-dim);
+  border: 1px solid var(--card-border);
+}
+
+.route-encounter-rate {
+  font-size: 11px;
+  color: #e74c3c;
+  margin-top: 8px;
+}

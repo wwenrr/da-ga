@@ -1,0 +1,158 @@
+/* ===== CATCH COMPONENT ===== */
+.catch-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  gap: 16px;
+}
+
+.catch-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.catch-title {
+  font-family: 'Bangers', cursive;
+  font-size: 36px;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.catch-wild {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.catch-emoji {
+  font-size: 64px;
+  animation: float-up 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+}
+
+.catch-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.catch-level {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.catch-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.catch-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catch-bar-label {
+  font-size: 12px;
+  font-weight: 700;
+  width: 50px;
+}
+
+.catch-bar-track {
+  flex: 1;
+  height: 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.catch-bar-fill {
+  height: 100%;
+  background: #3498db;
+  border-radius: 6px;
+  transition: width 0.3s;
+}
+
+.catch-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.catch-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.catch-btn:active {
+  transform: scale(0.94);
+}
+
+.btn-ball {
+  background: #3498db;
+  color: white;
+}
+
+.btn-ball.master {
+  background: #8e44ad;
+}
+
+.btn-ball.ultra {
+  background: #e74c3c;
+}
+
+.btn-ball.great {
+  background: #f39c12;
+}
+
+.btn-ball.poke {
+  background: #ecf0f1;
+  color: #333;
+}
+
+.btn-cancel {
+  background: #7f8c8d;
+  color: white;
+  flex: 0 0 auto;
+}
+
+.catch-hp {
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.catch-hp-poke {
+  width: 20px;
+  height: 12px;
+  background: #2ecc71;
+  border-radius: 3px;
+}
+
+.catch-hp-empty {
+  width: 20px;
+  height: 12px;
+  background: #7f8c8d;
+  border-radius: 3px;
+}

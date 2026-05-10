@@ -1,17 +1,18 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import useGameStore from './store'
-import './Fight.css'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import useGameStore from './store';
+import './Fight.css';
 
 function Fight() {
-  const { selectedRooster, opponent, fightEvents, currentEventIndex, advanceFight, skipFight, betAmount } = useGameStore()
-  const [lastAttacker, setLastAttacker] = useState(null)
+  const { selectedRooster, opponent, fightEvents, currentEventIndex, advanceFight, skipFight, betAmount, phase } = useGameStore();
+  const [lastAttacker, setLastAttacker] = useState(null);
+  const [showSkillSelect, setShowSkillSelect] = useState(false);
 
-  if (!selectedRooster || !opponent) return null
+  if (!selectedRooster || !opponent) return null;
 
-  const currentEvent = currentEventIndex >= 0 ? fightEvents[currentEventIndex] : null
-  const progress = currentEventIndex + 1
-  const total = fightEvents.length
+  const currentEvent = currentEventIndex >= 0 ? fightEvents[currentEventIndex] : null;
+  const progress = currentEventIndex + 1;
+  const total = fightEvents.length;
 
   // Calculate current HP from last event
   const myHP = currentEvent
@@ -28,6 +29,10 @@ function Fight() {
       setLastAttacker(currentEvent.attacker)
     }
     advanceFight()
+  }
+
+  const handleSkillSelect = () => {
+    setShowSkillSelect(true)
   }
 
   return (
@@ -110,12 +115,15 @@ function Fight() {
                   ? `⚔️ Bạn đánh ${event.damage} sát thương!`
                   : `💥 Địch đánh ${event.damage} sát thương!`
                 }
+                {event.skill && <span className="skill-name"> ({event.skill})</span>}
+                {event.type === 'attack' && event.multiplier > 1 && <span className="multiplier">super effective!</span>}
+                {event.type === 'attack' && event.multiplier < 1 && <span className="multiplier">không hiệu quả...</span>}
               </motion.div>
             ))}
           </AnimatePresence>
           {currentEventIndex < 0 && (
             <div style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: 13 }}>
-              Bấm "Bắt đầu" để戦 đấu!
+              Bấm "Bắt đầu" để chiến đấu!
             </div>
           )}
         </div>
@@ -136,8 +144,20 @@ function Fight() {
           {currentEventIndex < 0 ? '🥊 Bắt đầu!' : currentEventIndex >= fightEvents.length - 1 ? '🏁 Xem kết quả' : '➡️ Hiệp tiếp'}
         </button>
       </div>
+
+      {showSkillSelect && (
+        <div className="skill-select-overlay">
+          <div className="skill-select-container" onClick={(e) => e.stopPropagation()}>
+            <h3>Chọn kỹ năng</h3>
+            <div className="skill-list">
+              {/* Skills would be displayed here */}
+            </div>
+            <button onClick={() => setShowSkillSelect(false)}>Đóng</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-export default Fight
+export default Fight;

@@ -89,6 +89,26 @@ body {
   100% { opacity: 0; transform: translateY(80px) rotate(360deg); }
 }
 
+@keyframes attack-lunge {
+  0% { transform: translateX(0) scale(1); }
+  40% { transform: translateX(30px) scale(1.1); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes attack-lunge-reverse {
+  0% { transform: translateX(0) scale(1); }
+  40% { transform: translateX(-30px) scale(1.1); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* CSS Classes */
 .shake { animation: shake 0.5s ease-in-out; }
 .bob { animation: bob 1.2s ease-in-out infinite; }
 .pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
+.float-up { animation: float-up 3s ease-in-out infinite; }

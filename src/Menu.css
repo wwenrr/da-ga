@@ -63,6 +63,12 @@
   color: var(--gold);
 }
 
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .menu-btn {
   width: 100%;
   max-width: 280px;
@@ -90,6 +96,49 @@
 
 .btn-fight:active {
   box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.btn-map {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+}
+
+.btn-map:active {
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.btn-inventory {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+  box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+}
+
+.btn-inventory:active {
+  box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+}
+
+.btn-level {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+.btn-level:active {
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+}
+
+.btn-coin {
+  background: linear-gradient(135deg, #f39c12, #d35400);
+  color: white;
+  font-size: 14px;
+  padding: 12px 20px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+}
+
+.btn-coin:active {
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
 }
 
 .btn-reset {

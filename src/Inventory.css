@@ -1,0 +1,124 @@
+/* ===== INVENTORY COMPONENT ===== */
+.inventory-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  gap: 12px;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inventory-title {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.back-btn {
+  background: none;
+  border: 1px solid var(--card-border);
+  color: var(--text-dim);
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.inventory-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.item-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.item-card:active {
+  transform: scale(0.96);
+}
+
+.item-card:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.item-icon {
+  font-size: 40px;
+}
+
+.item-name {
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+}
+
+.item-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.item-quantity {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(255, 215, 0, 0.1);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.btn-action {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-action:active {
+  transform: scale(0.92);
+}
+
+.btn-use {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.btn-sell {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+.btn-close {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-dim);
+  width: 100%;
+  margin-top: 8px;
+}

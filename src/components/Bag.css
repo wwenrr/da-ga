@@ -1,0 +1,137 @@
+/* ===== BAG COMPONENT STYLES ===== */
+.bag-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+}
+
+.bag-container {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-panel);
+  border-radius: 20px 20px 0 0;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.bag-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.bag-header h3 {
+  font-family: 'Bangers', cursive;
+  font-size: 24px;
+  color: var(--gold);
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.bag-close-btn {
+  background: none;
+  border: none;
+  color: var(--red);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.bag-list {
+  padding: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.bag-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  margin-bottom: 10px;
+}
+
+.bag-item-icon {
+  font-size: 32px;
+}
+
+.bag-item-info {
+  flex: 1;
+}
+
+.bag-item-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.bag-item-qty {
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.bag-item-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.bag-item-btn:hover {
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.4);
+}
+
+.bag-empty {
+  text-align: center;
+  padding: 30px 0;
+}
+
+.bag-empty-icon {
+  font-size: 64px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+.bag-footer {
+  display: flex;
+  padding: 12px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--card-border);
+}
+
+.bag-save-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.bag-save-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}

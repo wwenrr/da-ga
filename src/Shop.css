@@ -1,0 +1,110 @@
+/* ===== SHOP COMPONENT ===== */
+.shop-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  gap: 12px;
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shop-title {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.wallet-display {
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 16px;
+}
+
+.shop-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.shop-item {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.shop-item:active {
+  transform: scale(0.96);
+}
+
+.shop-item-icon {
+  font-size: 40px;
+}
+
+.shop-item-name {
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+}
+
+.shop-item-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.shop-item-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(255,215,0,0.1);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.btn-buy {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-buy:active {
+  transform: scale(0.95);
+}
+
+.btn-buy:disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+}
+
+.btn-close {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-dim);
+  border: 1px solid var(--card-border);
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
