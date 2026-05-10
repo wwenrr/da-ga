@@ -321,6 +321,9 @@ function calculateDamage(attacker, defender, skill, attackerStage, defenderStage
   damage = Math.round(damage * variance);
   
   // Minimum 3, cap at 55 per hit (prevents 1-shot with HP=100)
+  const isCritical = Math.random() < 0.0625; // 6.25% crit chance
+  if (isCritical) damage = Math.round(damage * 1.5);
+  
   return Math.max(3, Math.min(55, damage));
 }
 
@@ -470,7 +473,8 @@ function executeSingleTurn(rooster, opponent, playerAction, combatData) {
           myHP: newMyHP,
           opHP: newOpHP,
           multiplier: typeMult,
-          message: `${actor.name} dùng ${skill.name}${typeMult > 1 ? ' — Siêu hiệu quả!' : typeMult < 1 ? ' — Không hiệu quả...' : ''}${dmg > 0 ? ` (-${dmg} HP)` : ''}`,
+          critical: dmg > 40, // rough threshold for crit indicator
+          message: `${actor.name} dùng ${skill.name}${typeMult > 1 ? ' — Siêu hiệu quả!' : typeMult < 1 ? ' — Không hiệu quả...' : ''}${dmg > 40 ? ' 💥 CHÍ MẠNG!' : ''}${dmg > 0 ? ` (-${dmg} HP)` : ''}`,
         });
         
         if (newMyHP <= 0 || newOpHP <= 0) {
@@ -786,6 +790,35 @@ const useGameStore = create((set, get) => ({
       localStorage.setItem('daGa_stats', JSON.stringify(stats));
       localStorage.setItem('daGa_wallet', String(wallet - betAmount));
     }
+  },
+  
+  switchCombatRooster: (newRooster) => {
+    const { combatData } = get();
+    if (!combatData || combatData.combatState === 'ended') return;
+    
+    // Reset HP to full, reset stat stages for new rooster
+    const newCombatData = {
+      ...combatData,
+      myHP: 100,
+      myStatStages: { atk: 0, def: 0, spd: 0 },
+      myPP: { cuaDam: 20, mo: 25, daBay: 15, khangCu: 10, phongThu: 15 },
+      combatState: 'player_turn',
+    };
+    
+    set({
+      selectedRooster: newRooster,
+      combatData: newCombatData,
+      combatLog: [...get().combatLog, {
+        round: combatData.combatTurn,
+        attacker: 'me',
+        type: 'switch',
+        message: `Đổi sang ${newRooster.name}! HP hồi phục!`,
+        myHP: 100,
+        opHP: combatData.opHP,
+      }],
+      combatLogIndex: get().combatLog.length,
+      showingCombatActionMenu: true,
+    });
   },
   
   advanceFight: () => {

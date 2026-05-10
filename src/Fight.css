@@ -209,6 +209,231 @@
   100% { transform: translateX(0) scale(1); }
 }
 
+/* ===== DAMAGE POPUP ===== */
+.damage-popup {
+  position: absolute;
+  font-family: 'Bangers', cursive;
+  font-size: 28px;
+  color: #e74c3c;
+  text-shadow: 0 0 10px rgba(231, 76, 60, 0.8), 0 2px 4px rgba(0,0,0,0.5);
+  font-weight: 700;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.damage-popup.me {
+  left: 20%;
+  top: 30%;
+}
+
+.damage-popup.opponent {
+  right: 20%;
+  top: 30%;
+}
+
+/* ===== HIT SHAKE ===== */
+.hit-shake {
+  animation: shake-hard 0.4s ease-in-out;
+}
+
+@keyframes shake-hard {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px) rotate(-3deg); }
+  30% { transform: translateX(8px) rotate(3deg); }
+  45% { transform: translateX(-6px) rotate(-2deg); }
+  60% { transform: translateX(6px) rotate(2deg); }
+  75% { transform: translateX(-3px); }
+}
+
+.attack-lunge {
+  animation: lunge-right 0.3s ease-out;
+}
+
+.attack-lunge-reverse {
+  animation: lunge-left 0.3s ease-out;
+}
+
+@keyframes lunge-right {
+  0% { transform: translateX(0) scale(1); }
+  50% { transform: translateX(40px) scale(1.15); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes lunge-left {
+  0% { transform: translateX(0) scale(1); }
+  50% { transform: translateX(-40px) scale(1.15); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+/* ===== PANEL TITLE ===== */
+.panel-title {
+  text-align: center;
+  color: var(--gold);
+  margin-bottom: 12px;
+  font-family: 'Bangers', cursive;
+  letter-spacing: 2px;
+  font-size: 20px;
+}
+
+/* ===== COMBAT HINT ===== */
+.combat-hint {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+/* ===== TURN INFO ===== */
+.turn-info {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 4px 0;
+}
+
+/* ===== SWITCH ROOSTER OVERLAY ===== */
+.switch-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.switch-panel {
+  width: 100%;
+  max-width: 500px;
+  background: var(--bg-panel);
+  border-radius: 24px 24px 0 0;
+  border: 1px solid var(--card-border);
+  padding: 16px 16px 24px;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+}
+
+.switch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.switch-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.switch-card:hover:not(:disabled) {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(255,215,0,0.2);
+}
+
+.switch-card.active {
+  border-color: #2ecc71;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.switch-card.active .switch-active-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #2ecc71;
+  color: white;
+  font-weight: 700;
+}
+
+.switch-emoji {
+  font-size: 36px;
+}
+
+.switch-name {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.switch-type {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+}
+
+.switch-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ===== CRITICAL HIT ===== */
+.multiplier.crit {
+  background: rgba(255, 69, 0, 0.4);
+  color: #ff4500;
+  animation: pulse-red 0.5s ease-in-out;
+}
+
+@keyframes pulse-red {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* ===== FLEE ===== */
+.multiplier.flee {
+  background: rgba(46, 204, 113, 0.3);
+  color: #2ecc71;
+}
+
+/* ===== SWITCH ===== */
+.multiplier.switch {
+  background: rgba(155, 89, 182, 0.3);
+  color: #9b59b6;
+}
+
+/* ===== LOG TYPE COLORS ===== */
+.log-entry.attack {
+  border-left: 2px solid #e74c3c;
+}
+
+.log-entry.status {
+  border-left: 2px solid #3498db;
+}
+
+.log-entry.miss {
+  border-left: 2px solid #7f8c8d;
+  opacity: 0.7;
+}
+
+.log-entry.item {
+  border-left: 2px solid #f39c12;
+}
+
+.log-entry.flee {
+  border-left: 2px solid #2ecc71;
+}
+
+.log-entry.switch {
+  border-left: 2px solid #9b59b6;
+}
+
+
 /* ===== HP BARS IN FIGHT COMPONENT ===== */
 .fight-hp-bar {
   width: 100%;
