@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import useGameStore, { SKILLS } from './store';
+import useGameStore, { SKILLS, TYPES } from './store';
 import './Fight.css';
 
 function Fight() {
@@ -19,12 +19,9 @@ function Fight() {
   const total = fightEvents.length;
 
   // Calculate current HP from last event
-  const myHP = currentEvent
-    ? (currentEvent.attacker === 'me' ? currentEvent.myHP : currentEvent.myHP)
-    : 100;
-  const opHP = currentEvent
-    ? (currentEvent.attacker === 'me' ? currentEvent.opHP : currentEvent.opHP)
-    : 100;
+  const lastEvent = fightEvents.slice(0, currentEventIndex + 1).reverse().find(e => e.myHP !== undefined);
+  const myHP = lastEvent?.myHP ?? 100;
+  const opHP = lastEvent?.opHP ?? 100;
 
   const getHPClass = (hp) => hp <= 30 ? 'low' : hp <= 60 ? 'medium' : ''
 
@@ -95,7 +92,7 @@ function Fight() {
             </div>
             
             <div className="fight-type-label" style={{ backgroundColor: selectedRooster.color }}>
-              {selectedRooster.type.toUpperCase()}
+              {(TYPES[selectedRooster.type]?.name || selectedRooster.type).toUpperCase()}
             </div>
           </div>
 
@@ -123,8 +120,8 @@ function Fight() {
               <div className="fight-hp-text opponent">{opHP}/100</div>
             </div>
             
-            <div className="fight-type-label opponent" style={{ backgroundColor: opponent.color }}>
-              {opponent.type.toUpperCase()}
+            <div className="fight-type-label opponent" style={{ backgroundColor: opponent.typeColor || opponent.color }}>
+              {(opponent.typeName || opponent.type).toUpperCase()}
             </div>
           </div>
         </div>

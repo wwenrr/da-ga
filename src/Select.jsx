@@ -49,15 +49,15 @@ function Select() {
               <div className="rooster-stats">
                 <div className="mini-stat">
                   <span className="mini-stat-icon">⚔️</span>
-                  <span className="mini-stat-val" style={{ color: '#e74c3c' }}>{rooster.atk}</span>
+                  <span className="mini-stat-val" style={{ color: '#e74c3c' }}>{rooster.baseStats.atk}</span>
                 </div>
                 <div className="mini-stat">
                   <span className="mini-stat-icon">🛡️</span>
-                  <span className="mini-stat-val" style={{ color: '#3498db' }}>{rooster.def}</span>
+                  <span className="mini-stat-val" style={{ color: '#3498db' }}>{rooster.baseStats.def}</span>
                 </div>
                 <div className="mini-stat">
                   <span className="mini-stat-icon">⚡</span>
-                  <span className="mini-stat-val" style={{ color: '#f1c40f' }}>{rooster.spd}</span>
+                  <span className="mini-stat-val" style={{ color: '#f1c40f' }}>{rooster.baseStats.spd}</span>
                 </div>
               </div>
 
@@ -65,7 +65,7 @@ function Select() {
                 <div
                   className="strength-fill"
                   style={{
-                    width: `${((rooster.atk + rooster.def + rooster.spd) / 3)}%`,
+                    width: `${((rooster.baseStats.atk + rooster.baseStats.def + rooster.baseStats.spd) / 3)}%`,
                     background: rooster.gradient,
                   }}
                 />

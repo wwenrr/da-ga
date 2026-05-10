@@ -251,6 +251,11 @@ function generateOpponent() {
   // Pick random rooster as base, then scale stats
   const baseRooster = ROOSTERS[Math.floor(Math.random() * ROOSTERS.length)];
   
+  // Random type independent of baseRooster
+  const typeKeys = Object.keys(TYPES);
+  const opponentType = typeKeys[Math.floor(Math.random() * typeKeys.length)];
+  const typeInfo = TYPES[opponentType];
+  
   return {
     id: 'opponent',
     name,
@@ -262,7 +267,9 @@ function generateOpponent() {
       def: Math.round((baseRooster.baseStats.def + Math.random() * 40) * mult),
       spd: Math.round((baseRooster.baseStats.spd + Math.random() * 40) * mult),
     },
-    type: baseRooster.type,
+    type: opponentType,
+    typeName: typeInfo.name,
+    typeColor: typeInfo.color,
     luck: 1.0 + Math.random() * 0.3,
     tier,
     tierLabel: ['Dễ', 'Vừa', 'Khó'][tier],
@@ -308,37 +315,37 @@ function simulateFight(rooster, opponent, useBagItem = null) {
     const skill = SKILLS[skillId];
     
     // Check PP
-    let skillUsed = false;
     if (skill.type === 'status') {
       // Apply buff if status skill
       if (skill.id === 'khangCu') myBuffs.atk = (myBuffs.atk || 1) * 1.15;
       if (skill.id === 'phongThu') myBuffs.def = (myBuffs.def || 1) * 1.15;
       
-      events.push({ round: i * 2 + 1, attacker: 'me', type: 'status', skill: skill.name, damage: 0 });
-      myPPUsed[skillId] = (myPPUsed[skillId] || 0) + 1;
       myHP = Math.min(100, myHP + 10); // Small heal on status
+      events.push({ round: i * 2 + 1, attacker: 'me', type: 'status', skill: skill.name, damage: 0, myHP, opHP });
+      myPPUsed[skillId] = (myPPUsed[skillId] || 0) + 1;
+    } else {
+      // My attack (non-status skill)
+      const myBaseDmg = Math.max(5, Math.round(
+        ((myStats.atk * (myBuffs.atk || 1)) * (0.8 + Math.random() * 0.4) - opStats.def * 0.2) * rooster.luck * myTypeMult
+      ));
+      
+      // Use skill power
+      let myDmg = Math.round(myBaseDmg * (skill.power / 30) * (Math.random() < skill.accuracy ? 1 : 0));
+      myDmg = Math.max(5, myDmg);
+      
+      opHP = Math.max(0, opHP - myDmg);
+      events.push({ 
+        round: i * 2 + 1, 
+        attacker: 'me', 
+        damage: myDmg, 
+        myHP: myHP, 
+        opHP: opHP,
+        skill: skill.name,
+        type: 'attack',
+        multiplier: myTypeMult,
+      });
+      myPPUsed[skillId] = (myPPUsed[skillId] || 0) + 1;
     }
-    
-    // My attack
-    const myBaseDmg = Math.max(5, Math.round(
-      ((myStats.atk * (myBuffs.atk || 1)) * (0.8 + Math.random() * 0.4) - opStats.def * 0.2) * rooster.luck * myTypeMult
-    ));
-    
-    // Use skill power
-    let myDmg = Math.round(myBaseDmg * (skill.power / 30) * (Math.random() < skill.accuracy ? 1 : 0));
-    myDmg = Math.max(5, myDmg);
-    
-    opHP = Math.max(0, opHP - myDmg);
-    events.push({ 
-      round: i * 2 + 1, 
-      attacker: 'me', 
-      damage: myDmg, 
-      myHP: myHP, 
-      opHP: opHP,
-      skill: skill.name,
-      type: 'attack',
-      multiplier: myTypeMult,
-    });
     
     if (opHP <= 0) break;
     
