@@ -309,12 +309,12 @@ function simulateFight(rooster, opponent, useBagItem = null) {
     
     // Check PP
     let skillUsed = false;
-    if (skill.type === 'status' || Math.random() < 0.8) {
+    if (skill.type === 'status') {
       // Apply buff if status skill
       if (skill.id === 'khangCu') myBuffs.atk = (myBuffs.atk || 1) * 1.15;
       if (skill.id === 'phongThu') myBuffs.def = (myBuffs.def || 1) * 1.15;
       
-      events.push({ round: i * 2 + 1, attacker: 'me', type: 'status', skill: skill.name });
+      events.push({ round: i * 2 + 1, attacker: 'me', type: 'status', skill: skill.name, damage: 0 });
       myPPUsed[skillId] = (myPPUsed[skillId] || 0) + 1;
       myHP = Math.min(100, myHP + 10); // Small heal on status
     }

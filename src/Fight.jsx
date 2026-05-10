@@ -139,9 +139,13 @@ function Fight() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                {event.attacker === 'me'
-                  ? `⚔️ Bạn đánh ${event.damage} sát thương!`
-                  : `💥 Địch đánh ${event.damage} sát thương!`
+                {event.type === 'status'
+                  ? (event.attacker === 'me'
+                    ? `🛡️ Bạn dùng ${event.skill}!`
+                    : `🛡️ Địch dùng ${event.skill}!`)
+                  : (event.attacker === 'me'
+                    ? `⚔️ Bạn đánh ${event.damage} sát thương!`
+                    : `💥 Địch đánh ${event.damage} sát thương!`)
                 }
                 {event.skill && <span className="skill-name"> ({event.skill})</span>}
                 {event.type === 'attack' && event.multiplier > 1 && <span className="multiplier">super effective!</span>}
