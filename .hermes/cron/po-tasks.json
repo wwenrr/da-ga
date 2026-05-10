@@ -1,0 +1,185 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "description": "Fix `simulateFight` function bug (PP not initialized properly)",
+      "done": false,
+      "phase": "## PHASE 1: Core Gameplay Loop (MVP)"
+    },
+    {
+      "id": 2,
+      "description": "Add type multiplier calculation for all 5 types",
+      "done": false,
+      "phase": "## PHASE 1: Core Gameplay Loop (MVP)"
+    },
+    {
+      "id": 3,
+      "description": "Update `Fight.jsx` to show real-time events",
+      "done": false,
+      "phase": "## PHASE 1: Core Gameplay Loop (MVP)"
+    },
+    {
+      "id": 4,
+      "description": "Add confetti effect on win",
+      "done": false,
+      "phase": "## PHASE 1: Core Gameplay Loop (MVP)"
+    },
+    {
+      "id": 5,
+      "description": "Implement XP system with level up",
+      "done": false,
+      "phase": "## PHASE 1: Core Gameplay Loop (MVP)"
+    },
+    {
+      "id": 6,
+      "description": "Update `SKILLS` data structure (add type field)",
+      "done": false,
+      "phase": "## PHASE 2: Skill System Expansion"
+    },
+    {
+      "id": 7,
+      "description": "Create `SkillSelect.jsx` component with type coloring",
+      "done": false,
+      "phase": "## PHASE 2: Skill System Expansion"
+    },
+    {
+      "id": 8,
+      "description": "Add type effectiveness tooltip",
+      "done": false,
+      "phase": "## PHASE 2: Skill System Expansion"
+    },
+    {
+      "id": 9,
+      "description": "Implement buff timer system",
+      "done": false,
+      "phase": "## PHASE 2: Skill System Expansion"
+    },
+    {
+      "id": 10,
+      "description": "Add damage log with breakdown",
+      "done": false,
+      "phase": "## PHASE 2: Skill System Expansion"
+    },
+    {
+      "id": 11,
+      "description": "Implement `Bag.jsx` with category tabs",
+      "done": false,
+      "phase": "## PHASE 3: Inventory & Shop"
+    },
+    {
+      "id": 12,
+      "description": "Add item use logic per effect type",
+      "done": false,
+      "phase": "## PHASE 3: Inventory & Shop"
+    },
+    {
+      "id": 13,
+      "description": "Create shop UI with categories",
+      "done": false,
+      "phase": "## PHASE 3: Inventory & Shop"
+    },
+    {
+      "id": 14,
+      "description": "Implement `buyItem` & `sellItem` store methods",
+      "done": false,
+      "phase": "## PHASE 3: Inventory & Shop"
+    },
+    {
+      "id": 15,
+      "description": "Add inventory full/empty checks",
+      "done": false,
+      "phase": "## PHASE 3: Inventory & Shop"
+    },
+    {
+      "id": 16,
+      "description": "Build `Map.jsx` with route tiles",
+      "done": false,
+      "phase": "## PHASE 4: Map & Wild Encounters"
+    },
+    {
+      "id": 17,
+      "description": "Implement encounter timer + random check",
+      "done": false,
+      "phase": "## PHASE 4: Map & Wild Encounters"
+    },
+    {
+      "id": 18,
+      "description": "Create catch UI with ball selector",
+      "done": false,
+      "phase": "## PHASE 4: Map & Wild Encounters"
+    },
+    {
+      "id": 19,
+      "description": "Add catch result overlay",
+      "done": false,
+      "phase": "## PHASE 4: Map & Wild Encounters"
+    },
+    {
+      "id": 20,
+      "description": "Save caught chickens to `localStorage`",
+      "done": false,
+      "phase": "## PHASE 4: Map & Wild Encounters"
+    },
+    {
+      "id": 21,
+      "description": "Build `Team.jsx` component",
+      "done": false,
+      "phase": "## PHASE 5: Team Management & Leveling"
+    },
+    {
+      "id": 22,
+      "description": "Create level-up animation",
+      "done": false,
+      "phase": "## PHASE 5: Team Management & Leveling"
+    },
+    {
+      "id": 23,
+      "description": "Implement rename functionality",
+      "done": false,
+      "phase": "## PHASE 5: Team Management & Leveling"
+    },
+    {
+      "id": 24,
+      "description": "Add stat calculation per level",
+      "done": false,
+      "phase": "## PHASE 5: Team Management & Leveling"
+    },
+    {
+      "id": 25,
+      "description": "Re name in `localStorage`",
+      "done": false,
+      "phase": "## PHASE 5: Team Management & Leveling"
+    },
+    {
+      "id": 26,
+      "description": "Add `canvas-confetti` for win celebration",
+      "done": false,
+      "phase": "## PHASE 6: Polish & Sound"
+    },
+    {
+      "id": 27,
+      "description": "Implement sound on win/fail",
+      "done": false,
+      "phase": "## PHASE 6: Polish & Sound"
+    },
+    {
+      "id": 28,
+      "description": "Add canvas animation layer for hits",
+      "done": false,
+      "phase": "## PHASE 6: Polish & Sound"
+    },
+    {
+      "id": 29,
+      "description": "Implement manual save/load buttons",
+      "done": false,
+      "phase": "## PHASE 6: Polish & Sound"
+    },
+    {
+      "id": 30,
+      "description": "Test on mobile viewport",
+      "done": false,
+      "phase": "## PHASE 6: Polish & Sound"
+    }
+  ],
+  "lastTaskIndex": -1
+}

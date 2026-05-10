@@ -612,13 +612,22 @@ const useGameStore = create((set, get) => ({
     });
   },
   
-  AttemptCatch: () => {
+  attemptCatch: () => {
     const { wildChicken, selectedRooster, selectedBall, wallet, caughtChickens } = get();
     
+    if (!wildChicken) return;
+    
     if (caughtChickens.length >= 10) {
-      alert('Balo đã đầy! Hãy bán hoặc thả bớt gà.');
-      return;
+      return { success: false, message: 'Balo đã đầy! Hãy bán hoặc thả bớt gà.' };
     }
+    
+    // Remove ball from inventory
+    const inventory = { ...get().inventory };
+    if ((inventory[selectedBall] || 0) <= 0) {
+      return { success: false, message: 'Không còn bóng để bắt!' };
+    }
+    inventory[selectedBall] = (inventory[selectedBall] || 0) - 1;
+    if (inventory[selectedBall] <= 0) delete inventory[selectedBall];
     
     const catchRate = calculateCatchRate(wildChicken, get().level, { [selectedBall]: 1 });
     const roll = Math.random();
@@ -630,17 +639,25 @@ const useGameStore = create((set, get) => ({
         level: wildChicken.level, 
         id: `caught_${Date.now()}`,
         nickname: wildChicken.name,
+        baseStats: { atk: 40 + wildChicken.level * 5, def: 30 + wildChicken.level * 3, spd: 35 + wildChicken.level * 4 },
+        type: wildChicken.type,
+        emoji: wildChicken.emoji,
+        color: wildChicken.emoji === '🐉' ? '#9b59b6' : wildChicken.emoji === '✨' ? '#f1c40f' : '#95a5a6',
       }];
       
       set({ 
         caughtChickens: newCaught,
-        phase: PHASE.MAP,
+        inventory,
+        catchResult: { success: true, message: `Bạn đã bắt được ${wildChicken.name}!` },
       });
       localStorage.setItem('daGa_caught', JSON.stringify(newCaught));
-      alert(`Bạn đã bắt được ${wildChicken.name}!`);
+      localStorage.setItem('daGa_inventory', JSON.stringify(inventory));
+      return { success: true, message: `Bạn đã bắt được ${wildChicken.name}!` };
     } else {
-      alert(`${wildChicken.name} đã thoát khỏi bóng!`);
-      get().AttemptCatch(); // Try again
+      // Missed - update inventory but don't loop
+      set({ inventory });
+      localStorage.setItem('daGa_inventory', JSON.stringify(inventory));
+      return { success: false, message: `${wildChicken.name} đã thoát khỏi bóng!` };
     }
   },
   
@@ -662,13 +679,22 @@ const useGameStore = create((set, get) => ({
     });
   },
   
-  AttemptCatch: () => {
+  attemptCatch: () => {
     const { wildChicken, selectedRooster, selectedBall, wallet, caughtChickens } = get();
     
+    if (!wildChicken) return;
+    
     if (caughtChickens.length >= 10) {
-      alert('Balo đã đầy! Hãy bán hoặc thả bớt gà.');
-      return;
+      return { success: false, message: 'Balo đã đầy! Hãy bán hoặc thả bớt gà.' };
     }
+    
+    // Remove ball from inventory
+    const inventory = { ...get().inventory };
+    if ((inventory[selectedBall] || 0) <= 0) {
+      return { success: false, message: 'Không còn bóng để bắt!' };
+    }
+    inventory[selectedBall] = (inventory[selectedBall] || 0) - 1;
+    if (inventory[selectedBall] <= 0) delete inventory[selectedBall];
     
     const catchRate = calculateCatchRate(wildChicken, get().level, { [selectedBall]: 1 });
     const roll = Math.random();
@@ -680,17 +706,25 @@ const useGameStore = create((set, get) => ({
         level: wildChicken.level, 
         id: `caught_${Date.now()}`,
         nickname: wildChicken.name,
+        baseStats: { atk: 40 + wildChicken.level * 5, def: 30 + wildChicken.level * 3, spd: 35 + wildChicken.level * 4 },
+        type: wildChicken.type,
+        emoji: wildChicken.emoji,
+        color: wildChicken.emoji === '🐉' ? '#9b59b6' : wildChicken.emoji === '✨' ? '#f1c40f' : '#95a5a6',
       }];
       
       set({ 
         caughtChickens: newCaught,
-        phase: PHASE.MAP,
+        inventory,
+        catchResult: { success: true, message: `Bạn đã bắt được ${wildChicken.name}!` },
       });
       localStorage.setItem('daGa_caught', JSON.stringify(newCaught));
-      alert(`Bạn đã bắt được ${wildChicken.name}!`);
+      localStorage.setItem('daGa_inventory', JSON.stringify(inventory));
+      return { success: true, message: `Bạn đã bắt được ${wildChicken.name}!` };
     } else {
-      alert(`${wildChicken.name} đã thoát khỏi bóng!`);
-      get().AttemptCatch(); // Try again
+      // Missed - update inventory but don't loop
+      set({ inventory });
+      localStorage.setItem('daGa_inventory', JSON.stringify(inventory));
+      return { success: false, message: `${wildChicken.name} đã thoát khỏi bóng!` };
     }
   },
   

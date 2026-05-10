@@ -4,36 +4,60 @@ import useGameStore, { BALLS, calculateCatchRate } from './store'
 import './Catch.css'
 
 function Catch({ onBack }) {
-  const { wildChicken, selectedRooster, selectedBall, attemptCatch, catchChickens } = useGameStore()
+  const { wildChicken, selectedBall, attemptCatch, caughtChickens, level, inventory } = useGameStore()
   const [attemptCount, setAttemptCount] = useState(0)
-  const [success, setSuccess] = useState(null)
+  const [message, setMessage] = useState('')
+  const [isSuccess, setIsSuccess] = useState(null)
+  const [isCatching, setIsCatching] = useState(false)
 
-  // Calculate HP for catch animation
+  if (!wildChicken) return null
+
   const maxHP = 100
   const currentHP = wildChicken.level * 12
-
-  const catchRate = calculateCatchRate(wildChicken, 1, { [selectedBall]: 1 })
+  const catchRate = calculateCatchRate(wildChicken, level, { [selectedBall]: 1 })
   const ball = BALLS[selectedBall]
 
-  const handleCatch = () => {
+  const handleCatch = (ballId) => {
+    if (isCatching) return
+    
+    // Check if player has this ball
+    if ((inventory[ballId] || 0) <= 0) {
+      setMessage('Không còn bóng này!')
+      return
+    }
+    
+    // Select ball first
+    useGameStore.getState().selectBall(ballId)
+    
+    setIsCatching(true)
     setAttemptCount(prev => prev + 1)
-
-    // Auto-success after 3 attempts for demo
-    const isSuccess = attemptCount >= 2 || Math.random() < catchRate
-
+    
+    const newCatchRate = calculateCatchRate(wildChicken, level, { [ballId]: 1 })
+    const isSuccess = attemptCount >= 2 || Math.random() < newCatchRate
+    
     if (isSuccess) {
-      setSuccess(true)
+      setIsSuccess(true)
+      setMessage(`Đang bắt ${wildChicken.name}...`)
       setTimeout(() => {
-        attemptCatch()
-        setSuccess(null)
-        onBack()
+        const result = attemptCatch()
+        setMessage(result.message)
+        setTimeout(() => {
+          setIsSuccess(null)
+          setIsCatching(false)
+          onBack()
+        }, 2000)
       }, 1500)
     } else {
-      setSuccess(false)
+      setIsSuccess(false)
+      setMessage(`${wildChicken.name} đã thoát! Thử lại?`)
+      setIsCatching(false)
     }
   }
 
-  if (!wildChicken) return null
+  const handleRun = () => {
+    useGameStore.getState().setPhase('map')
+    onBack?.()
+  }
 
   return (
     <div className="catch-screen">
@@ -49,7 +73,7 @@ function Catch({ onBack }) {
         <motion.div
           className="catch-wild"
           initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
+          animate={{ scale: isSuccess === false ? 1.1 : 1 }}
           transition={{ type: 'spring', stiffness: 200 }}
         >
           <div className="catch-emoji">{wildChicken.emoji}</div>
@@ -64,6 +88,7 @@ function Catch({ onBack }) {
               <motion.div
                 className="catch-bar-fill"
                 initial={{ width: '100%' }}
+                animate={{ width: `${Math.max(10, 100 - currentHP)}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
@@ -71,63 +96,57 @@ function Catch({ onBack }) {
           </div>
         </div>
 
-        <div className="catch-hp">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className={i < 3 ? 'catch-hp-poke' : 'catch-hp-empty'}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: i * 0.1 }}
-            />
-          ))}
-        </div>
+        {/* Message */}
+        {message && (
+          <motion.div
+            className="catch-message"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{ 
+              textAlign: 'center', 
+              margin: '8px 0',
+              color: isSuccess ? '#2ecc71' : isSuccess === false ? '#e74c3c' : '#f39c12',
+              fontWeight: 'bold',
+              fontSize: 14,
+            }}
+          >
+            {message}
+          </motion.div>
+        )}
 
+        {/* Ball Selection */}
         <div className="catch-actions">
-          <motion.button
-            className="catch-btn btn-ball poke"
-            whileTap={{ scale: 0.9 }}
-            onClick={() => { setSuccess(null); setTimeout(() => setSuccess(false), 1000); }}
-          >
-            {ball.icon} {ball.name}
-          </motion.button>
-
-          <motion.button
-            className="catch-btn btn-ball great"
-            whileTap={{ scale: 0.9 }}
-            onClick={() => { setSuccess(null); setTimeout(() => setSuccess(false), 1000); }}
-          >
-            🟡 Great Ball
-          </motion.button>
-
-          <motion.button
-            className="catch-btn btn-ball ultra"
-            whileTap={{ scale: 0.9 }}
-            onClick={() => { setSuccess(null); setTimeout(() => setSuccess(false), 1000); }}
-          >
-            🔴 Ultra Ball
-          </motion.button>
-
-          <motion.button
-            className="catch-btn btn-ball master"
-            whileTap={{ scale: 0.9 }}
-            onClick={() => { setSuccess(null); setTimeout(() => setSuccess(false), 1000); }}
-          >
-            👑 Master Ball
-          </motion.button>
+          {Object.values(BALLS).map((b) => (
+            <motion.button
+              key={b.id}
+              className={`catch-btn btn-ball ${b.id}`}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => handleCatch(b.id)}
+              disabled={isCatching || (inventory[b.id] || 0) <= 0}
+              style={{
+                opacity: (inventory[b.id] || 0) <= 0 ? 0.4 : 1,
+                cursor: (inventory[b.id] || 0) <= 0 ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {b.icon} {b.name}
+              <span style={{ fontSize: 10, marginLeft: 4 }}>
+                x{inventory[b.id] || 0}
+              </span>
+            </motion.button>
+          ))}
         </div>
 
         <motion.button
           className="catch-btn btn-cancel"
           whileTap={{ scale: 0.95 }}
-          onClick={onBack}
+          onClick={handleRun}
         >
           🏃 Thoát
         </motion.button>
       </div>
 
       <div style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 20 }}>
-        📊 Tỷ lệ bắt: {(catchRate * 100).toFixed(1)}% (Lv.1)
+        📊 Tỷ lệ bắt: {(catchRate * 100).toFixed(1)}% (Lv.{level})
       </div>
     </div>
   )

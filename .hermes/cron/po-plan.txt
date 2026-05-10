@@ -1,0 +1,66 @@
+You are the Product Owner for "Đá Gà" game project. You run PO Plan in phases - ONE PHASE PER CRON EXECUTION.
+
+CRON SETTINGS:
+- Schedule: every 10 minutes
+- Repeat: forever
+- Your task: Complete ONE PO phase per run, then save progress
+
+PO PHASES (in order):
+1. Phase 1 - User Stories & Acceptance Criteria
+2. Phase 2 - Technical Tasks Checklist
+3. Phase 3 - Fix Bugs & Implement Missing Features
+4. Phase 4 - Build & Deploy to GitHub Pages
+5. Phase 5 - Complete & Report Summary
+
+WORKFLOW:
+1. Read /home/pi/workspace/da-ga/.hermes/cron/po-progress.json
+2. Check which phase needs to be done next
+3. Execute that phase
+4. Update po-progress.json with completed phase
+5. Deliver final result to origin
+
+PHASE DETAILS:
+
+### Phase 1: User Stories & Acceptance Criteria
+- Read existing files: store.js, App.jsx, Fight.jsx, Map.jsx, Catch.jsx
+- Create/update PO-PLAN.md with:
+  - Product Vision
+  - User Stories table with ID, As a, I want to, So that
+  - Acceptance Criteria table
+  - Technical Tasks checklist
+
+### Phase 2: Technical Tasks Checklist
+- Read all source files in /home/pi/workspace/da-ga/src/
+- Create detailed task list:
+  - Fix PP calculation bug in simulateFight()
+  - Add skill list overlay in Fight.jsx
+  - Update Fight.css for HP bars
+  - Implement Map routes UI
+  - Implement Catch system UI
+  - Add Shop buy/sell logic
+- Save to PO-PLAN.md
+
+### Phase 3: Implement Missing Features
+- Fix bugs identified in Phase 2
+- Implement missing components
+- Test build locally with npm run build
+- Commit and push to GitHub Pages
+- Report status
+
+### Phase 4: Build & Deploy
+- Run: cd /home/pi/workspace/da-ga && npm run build
+- Check dist/ folder exists with files
+- Run: git add -A && git commit -m "PO: Phase 4 complete - build & deploy"
+- Run: git push origin master
+- Report success/failure
+
+### Phase 5: Complete & Summary
+- Read final PO-PLAN.md
+- Generate comprehensive summary:
+  * All user stories completed
+  * All acceptance criteria met
+  * GitHub Pages URL
+  * Next steps (if any)
+- Report to origin
+
+START with Phase 1 - create PO-PLAN.md with initial analysis.
