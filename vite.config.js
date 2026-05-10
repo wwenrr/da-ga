@@ -10,7 +10,7 @@ export default defineConfig({
     port: 8080,
   },
   server: {
-    allowedHosts: ['da-ga-test.loca.lt', 'btl-dw-9119.loca.lt', 'localhost'],
+    allowedHosts: ['da-ga-test.loca.lt', 'btl-dw-9119.loca.lt', 'localhost', 'host.docker.internal'],
     host: '0.0.0.0',
     port: 5173,
   },
