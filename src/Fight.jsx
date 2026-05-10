@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import useGameStore from './store';
+import useGameStore, { SKILLS } from './store';
 import './Fight.css';
 
 function Fight() {
   const { selectedRooster, opponent, fightEvents, currentEventIndex, advanceFight, skipFight, betAmount, phase } = useGameStore();
   const [lastAttacker, setLastAttacker] = useState(null);
   const [showSkillSelect, setShowSkillSelect] = useState(false);
+  const [mySkills, setMySkills] = useState(['cuaDam', 'mo', 'daBay', 'khangCu', 'phongThu']);
+  const [currentFightState, setCurrentFightState] = useState({
+    myPP: { cuaDam: 20, mo: 25, daBay: 15, khangCu: 10, phongThu: 15 }
+  });
 
   if (!selectedRooster || !opponent) return null;
 
@@ -17,10 +21,10 @@ function Fight() {
   // Calculate current HP from last event
   const myHP = currentEvent
     ? (currentEvent.attacker === 'me' ? currentEvent.myHP : currentEvent.myHP)
-    : 100
+    : 100;
   const opHP = currentEvent
     ? (currentEvent.attacker === 'me' ? currentEvent.opHP : currentEvent.opHP)
-    : 100
+    : 100;
 
   const getHPClass = (hp) => hp <= 30 ? 'low' : hp <= 60 ? 'medium' : ''
 
@@ -31,9 +35,36 @@ function Fight() {
     advanceFight()
   }
 
-  const handleSkillSelect = () => {
-    setShowSkillSelect(true)
+  const handleSkillSelect = (skillId) => {
+    setShowSkillSelect(false);
+    // In future, use selected skill for attack calculation
+    advanceFight();
   }
+
+  const renderSkillOption = (skillId, i) => {
+    const skill = SKILLS[skillId];
+    const pp = currentFightState.myPP[skillId] || skill.pp;
+    const remaining = skill.pp - (skill.pp - pp);
+    
+    return (
+      <motion.div
+        key={skillId}
+        className="skill-option"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: i * 0.05 }}
+        onClick={() => handleSkillSelect(skillId)}
+        whileTap={{ scale: 0.95 }}
+      >
+        <div style={{ fontWeight: 'bold', color: 'var(--gold)' }}>{skill.name}</div>
+        <div style={{ fontSize: 12, color: '#aaa', marginTop: 4 }}>
+          <span>⚔️ Pwr: {skill.power}</span> | 
+          <span> PP: {remaining}/{skill.pp}</span>
+        </div>
+        <div style={{ fontSize: 10, color: 'var(--text-dim)' }}>{skill.effect}</div>
+      </motion.div>
+    );
+  };
 
   return (
     <div className="fight-screen">
@@ -52,6 +83,20 @@ function Fight() {
             <div className="fight-fighter-name" style={{ color: selectedRooster.color }}>
               {selectedRooster.name}
             </div>
+            
+            <div className="fight-hp-bar">
+              <motion.div
+                className="fight-hp-fill"
+                initial={{ width: '100%' }}
+                animate={{ width: `${(myHP / 100) * 100}%` }}
+                style={{ backgroundColor: myHP <= 30 ? '#e74c3c' : myHP <= 60 ? '#f39c12' : '#2ecc71' }}
+              />
+              <div className="fight-hp-text">{myHP}/100</div>
+            </div>
+            
+            <div className="fight-type-label" style={{ backgroundColor: selectedRooster.color }}>
+              {selectedRooster.type.toUpperCase()}
+            </div>
           </div>
 
           <div className="fight-vs-label">VS</div>
@@ -67,37 +112,20 @@ function Fight() {
             <div className="fight-fighter-name" style={{ color: opponent.color }}>
               {opponent.name}
             </div>
-          </div>
-        </div>
-
-        <div className="health-bars">
-          <div className="health-bar-row">
-            <span className="health-bar-label" style={{ color: selectedRooster.color }}>Bạn</span>
-            <div className="health-bar-track">
+            
+            <div className="fight-hp-bar opponent">
               <motion.div
-                className={`health-bar-fill my ${getHPClass(myHP)}`}
+                className="fight-hp-fill"
                 initial={{ width: '100%' }}
-                animate={{ width: `${Math.max(0, myHP)}%` }}
-                transition={{ duration: 0.6 }}
+                animate={{ width: `${(opHP / 100) * 100}%` }}
+                style={{ backgroundColor: opHP <= 30 ? '#e74c3c' : opHP <= 60 ? '#f39c12' : '#2ecc71' }}
               />
+              <div className="fight-hp-text opponent">{opHP}/100</div>
             </div>
-            <span className="health-text" style={{ color: myHP > 60 ? '#2ecc71' : myHP > 30 ? '#f39c12' : '#e74c3c' }}>
-              {myHP}%
-            </span>
-          </div>
-          <div className="health-bar-row">
-            <span className="health-bar-label" style={{ color: opponent.color }}>Địch</span>
-            <div className="health-bar-track">
-              <motion.div
-                className={`health-bar-fill opponent ${getHPClass(opHP)}`}
-                initial={{ width: '100%' }}
-                animate={{ width: `${Math.max(0, opHP)}%` }}
-                transition={{ duration: 0.6 }}
-              />
+            
+            <div className="fight-type-label opponent" style={{ backgroundColor: opponent.color }}>
+              {opponent.type.toUpperCase()}
             </div>
-            <span className="health-text" style={{ color: opHP > 60 ? '#e74c3c' : opHP > 30 ? '#f39c12' : '#2ecc71' }}>
-              {opHP}%
-            </span>
           </div>
         </div>
 
@@ -145,12 +173,13 @@ function Fight() {
         </button>
       </div>
 
+      {/* Skill Select Overlay */}
       {showSkillSelect && (
-        <div className="skill-select-overlay">
+        <div className="skill-select-overlay" onClick={() => setShowSkillSelect(false)}>
           <div className="skill-select-container" onClick={(e) => e.stopPropagation()}>
             <h3>Chọn kỹ năng</h3>
             <div className="skill-list">
-              {/* Skills would be displayed here */}
+              {mySkills.map((skillId, i) => renderSkillOption(skillId, i))}
             </div>
             <button onClick={() => setShowSkillSelect(false)}>Đóng</button>
           </div>

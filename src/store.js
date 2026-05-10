@@ -287,12 +287,16 @@ function simulateFight(rooster, opponent, useBagItem = null) {
   let myStats = { ...rooster.baseStats };
   let opStats = { ...opponent.baseStats };
   let myBuffs = {}, opBuffs = {};
-  let myPP = { ...opponent.baseStats }; // Will be initialized per skill
   const mySkills = ['cuaDam', 'mo', 'daBay', 'khangCu', 'phongThu'];
   
   // Initialize PP
   let myPPUsed = {};
   let opPPUsed = {};
+  
+  // Initialize PP max for each skill
+  let myPPMax = {
+    cuaDam: 20, mo: 25, daBay: 15, khangCu: 10, phongThu: 15
+  };
   
   // Calculate initial stats with type multiplier
   const myTypeMult = calculateTypeMultiplier(rooster.type, opponent.type);
@@ -595,6 +599,56 @@ const useGameStore = create((set, get) => ({
   },
   
   // ===== CATCH SYSTEM =====
+  startCatch: (routeIndex) => {
+    const wildId = ROUTES[routeIndex].wilds[Math.floor(Math.random() * ROUTES[routeIndex].wilds.length)];
+    const wildChicken = WILD_CHICKENS.find(w => w.id === wildId);
+    const opponent = generateOpponent();
+    
+    set({
+      phase: PHASE.CATCH,
+      currentRoute: routeIndex,
+      wildChicken,
+      opponent,
+    });
+  },
+  
+  AttemptCatch: () => {
+    const { wildChicken, selectedRooster, selectedBall, wallet, caughtChickens } = get();
+    
+    if (caughtChickens.length >= 10) {
+      alert('Balo đã đầy! Hãy bán hoặc thả bớt gà.');
+      return;
+    }
+    
+    const catchRate = calculateCatchRate(wildChicken, get().level, { [selectedBall]: 1 });
+    const roll = Math.random();
+    
+    if (roll < catchRate) {
+      // Caught!
+      const newCaught = [...caughtChickens, { 
+        ...wildChicken, 
+        level: wildChicken.level, 
+        id: `caught_${Date.now()}`,
+        nickname: wildChicken.name,
+      }];
+      
+      set({ 
+        caughtChickens: newCaught,
+        phase: PHASE.MAP,
+      });
+      localStorage.setItem('daGa_caught', JSON.stringify(newCaught));
+      alert(`Bạn đã bắt được ${wildChicken.name}!`);
+    } else {
+      alert(`${wildChicken.name} đã thoát khỏi bóng!`);
+      get().AttemptCatch(); // Try again
+    }
+  },
+  
+  selectBall: (ballId) => {
+    set({ selectedBall: ballId });
+  },
+  
+  // ===== LEVEL SYSTEM =====
   startCatch: (routeIndex) => {
     const wildId = ROUTES[routeIndex].wilds[Math.floor(Math.random() * ROUTES[routeIndex].wilds.length)];
     const wildChicken = WILD_CHICKENS.find(w => w.id === wildId);
