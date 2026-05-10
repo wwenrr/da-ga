@@ -1,0 +1,133 @@
+/* ===== MENU SCREEN ===== */
+.menu-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  gap: 20px;
+}
+
+.menu-logo {
+  font-size: 80px;
+  animation: bob 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+}
+
+.menu-title {
+  font-family: 'Bangers', cursive;
+  font-size: 52px;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.menu-subtitle {
+  font-size: 16px;
+  color: var(--text-dim);
+  margin-top: -10px;
+}
+
+.menu-stats {
+  display: flex;
+  gap: 24px;
+  padding: 12px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.menu-btn {
+  width: 100%;
+  max-width: 280px;
+  padding: 18px 32px;
+  border: none;
+  border-radius: 16px;
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-fight {
+  background: linear-gradient(135deg, #ffd700, #f39c12);
+  color: #1a1a2e;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+.btn-fight:active {
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.btn-reset {
+  background: transparent;
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 10px 20px;
+  letter-spacing: 0;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-reset:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ===== WALLET BAR ===== */
+.wallet-bar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.5);
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--card-border);
+  z-index: 10;
+}
+
+.wallet-icon {
+  font-size: 18px;
+}
+
+.wallet-amount {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--gold);
+}

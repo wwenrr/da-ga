@@ -1,0 +1,122 @@
+/* ===== RESULT SCREEN ===== */
+.result-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  gap: 16px;
+}
+
+.result-emoji {
+  font-size: 72px;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+}
+
+.result-title {
+  font-family: 'Bangers', cursive;
+  font-size: 40px;
+  letter-spacing: 3px;
+}
+
+.result-title.win {
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.result-title.lose {
+  color: var(--red);
+  text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+}
+
+.result-subtitle {
+  font-size: 16px;
+  color: var(--text-dim);
+}
+
+.result-details {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.result-row-label {
+  color: var(--text-dim);
+}
+
+.result-row-value {
+  font-weight: 700;
+}
+
+.result-row-value.positive { color: var(--green); }
+.result-row-value.negative { color: var(--red); }
+
+.result-wallet {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.result-wallet-icon {
+  font-size: 24px;
+}
+
+.result-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.result-btn {
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.result-btn:active { transform: scale(0.94); }
+
+.btn-play-again {
+  background: linear-gradient(135deg, #ffd700, #f39c12);
+  color: #1a1a2e;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-menu {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--card-border);
+}
+
+.confetti-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  pointer-events: none;
+}

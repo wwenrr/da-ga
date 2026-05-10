@@ -1,0 +1,209 @@
+/* ===== FIGHT SCREEN ===== */
+.fight-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  gap: 10px;
+}
+
+.fight-header {
+  text-align: center;
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  color: var(--red-bright);
+  letter-spacing: 2px;
+  animation: glow-pulse 1s ease-in-out infinite;
+}
+
+.fight-arena {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: radial-gradient(ellipse at center, #2a1a0a 0%, #1a0a00 80%);
+  border: 2px solid rgba(139, 94, 60, 0.4);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fight-arena::before {
+  content: '🏟️';
+  position: absolute;
+  font-size: 60px;
+  opacity: 0.08;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.fight-combatants {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+}
+
+.fight-fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.fight-fighter-emoji {
+  font-size: 52px;
+  transition: transform 0.2s;
+}
+
+.fight-fighter-emoji.attacking {
+  animation: attack-lunge 0.3s ease-out;
+}
+
+.fight-fighter-emoji.hit {
+  animation: shake 0.3s ease-in-out;
+}
+
+.fight-fighter-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  max-width: 100px;
+  line-height: 1.2;
+}
+
+.fight-vs-label {
+  font-family: 'Bangers', cursive;
+  font-size: 24px;
+  color: var(--red-bright);
+  text-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+}
+
+.health-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.health-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.health-bar-label {
+  font-size: 11px;
+  font-weight: 700;
+  width: 40px;
+  text-align: right;
+}
+
+.health-bar-track {
+  flex: 1;
+  height: 14px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+}
+
+.health-bar-fill {
+  height: 100%;
+  border-radius: 7px;
+  transition: width 0.6s ease-out;
+  position: relative;
+}
+
+.health-bar-fill.my { background: linear-gradient(90deg, #2ecc71, #27ae60); }
+.health-bar-fill.opponent { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+.health-bar-fill.low { background: linear-gradient(90deg, #e74c3c, #c0392b) !important; }
+.health-bar-fill.medium { background: linear-gradient(90deg, #f39c12, #e67e22) !important; }
+
+.health-text {
+  font-size: 13px;
+  font-weight: 700;
+  width: 36px;
+  text-align: left;
+}
+
+.fight-log {
+  flex: 1;
+  width: 100%;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 8px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.log-entry {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  animation: slide-in-up 0.3s ease-out;
+}
+
+.log-entry.me {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  text-align: left;
+}
+
+.log-entry.opponent {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  text-align: right;
+}
+
+.fight-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.fight-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.fight-btn:active { transform: scale(0.94); }
+
+.fight-btn-next {
+  background: linear-gradient(135deg, #ffd700, #f39c12);
+  color: #1a1a2e;
+}
+
+.fight-btn-skip {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-dim);
+  border: 1px solid var(--card-border);
+}
+
+@keyframes attack-lunge {
+  0% { transform: translateX(0) scale(1); }
+  40% { transform: translateX(30px) scale(1.1); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes attack-lunge-reverse {
+  0% { transform: translateX(0) scale(1); }
+  40% { transform: translateX(-30px) scale(1.1); }
+  100% { transform: translateX(0) scale(1); }
+}

@@ -1,0 +1,139 @@
+/* ===== BET SCREEN ===== */
+.bet-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  gap: 14px;
+}
+
+.bet-header {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  color: var(--gold);
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.vs-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.fighter-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  min-width: 110px;
+}
+
+.fighter-emoji {
+  font-size: 40px;
+}
+
+.fighter-name {
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.fighter-tier {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.vs-text {
+  font-family: 'Bangers', cursive;
+  font-size: 28px;
+  color: var(--red-bright);
+  text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+.bet-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: center;
+}
+
+.bet-label {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.bet-amount-display {
+  font-family: 'Bangers', cursive;
+  font-size: 48px;
+  color: var(--gold);
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.bet-quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.bet-quick-btn {
+  padding: 14px 8px;
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.bet-quick-btn:active {
+  transform: scale(0.93);
+}
+
+.bet-quick-btn.active {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.15);
+  color: var(--gold);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+}
+
+.confirm-btn {
+  width: 100%;
+  max-width: 340px;
+  padding: 18px;
+  border: none;
+  border-radius: 16px;
+  font-family: 'Bangers', cursive;
+  font-size: 24px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.confirm-btn:active {
+  transform: scale(0.95);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
