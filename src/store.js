@@ -344,7 +344,7 @@ function initCombatState(rooster, opponent) {
     opMaxHP: 100,
     myStatStages: { atk: 0, def: 0, spd: 0 },
     opStatStages: { atk: 0, def: 0, spd: 0 },
-    myPP: { cuaDam: 20, mo: 25, daBay: 15, khangCu: 10, phongThu: 15 },
+    myPP: { cuaDam: 0, mo: 0, daBay: 0, khangCu: 0, phongThu: 0 },
     opPP: { cuaDam: 20, mo: 25, daBay: 15 },
     combatEvents: [],
     combatTurn: 0,

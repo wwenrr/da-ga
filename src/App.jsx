@@ -33,6 +33,9 @@ function App() {
   
   // Only show wallet bar except menu
   const showWallet = phase !== PHASE.MENU;
+  
+  // Don't show bottom nav during combat
+  const showNav = phase !== PHASE.FIGHT;
 
   return (
     <div className="app-container">
@@ -124,7 +127,7 @@ function App() {
       </AnimatePresence>
 
       {/* Mobile Navigation Bar */}
-      {showWallet && (
+      {showNav && showWallet && (
         <div className="mobile-nav">
           <motion.button 
             className="nav-btn" 
